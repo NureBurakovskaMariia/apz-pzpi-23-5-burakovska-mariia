@@ -1,0 +1,21 @@
+
+GET https://api.steampowered.com/ISteamNews/GetNewsForApp/v0002/
+    ?appid=440
+    &count=3
+    &format=json
+
+
+{
+ "appnews": {
+		"appid": 440,
+		"newsitems": [
+			{
+				"gid": "5273322152862419409",
+				"title": "Team Fortress 2 Update Released",
+				"url": "https://store.steampowered.com/news/externalpost/...",
+				"author": "valve",
+				"contents": "An update to Team Fortress 2 has been released..."
+			}
+		]
+	}
+}
