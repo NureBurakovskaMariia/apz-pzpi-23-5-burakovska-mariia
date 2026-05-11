@@ -1,0 +1,63 @@
+package ua.nure.petshelter.ui.theme
+
+import androidx.compose.runtime.Immutable
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.sp
+import ua.nure.petshelter.R
+
+
+val regularTextStyle = TextStyle(
+    fontSize = 16.sp,
+    fontWeight = FontWeight(600),
+    fontFamily = FontFamily(
+        Font(R.font.crimson_text_regular)
+    )
+    )
+
+val smallTextStyle = TextStyle(
+    fontSize = 14.sp,
+    fontWeight = FontWeight(600)
+)
+val largeTextStyle = TextStyle(
+    fontSize = 24.sp,
+    fontWeight = FontWeight(800),
+    fontFamily = FontFamily(
+        Font(R.font.crimson_text_bold)
+    )
+)
+
+@Immutable
+data class AppTypography(
+    val regular: TextStyle = TextStyle.Default,
+    val small: TextStyle = TextStyle.Default,
+    val large: TextStyle = TextStyle.Default,
+)
+
+internal val LightTypography: AppTypography
+    get() = AppTypography(
+        regular = regularTextStyle.copy(
+            color = foregroundColorLight
+        ),
+        small = smallTextStyle.copy(
+            color = foregroundColorLight
+        ),
+        large = largeTextStyle.copy(
+            color = foregroundColorLight
+        )
+    )
+
+internal val DarkTypography: AppTypography
+    get() = AppTypography(
+        regular = regularTextStyle.copy(
+            color = foregroundColorDark
+        ),
+        small = smallTextStyle.copy(
+            color = foregroundColorDark
+        ),
+        large = largeTextStyle.copy(
+            color = foregroundColorDark
+        )
+    )
