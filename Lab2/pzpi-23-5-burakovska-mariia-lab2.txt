@@ -1,1 +1,347 @@
+﻿  МІНІСТЕРСТВО ОСВІТИ І НАУКИ УКРАЇНИ
+ХАРКІВСЬКИЙ НАЦІОНАЛЬНИЙ УНІВЕРСИТЕТ РАДІОЕЛЕКТРОНІКИ
+КАФЕДРА ПРОГРАМНОЇ ІНЖЕНЕРІЇ
+
+
+
+
+
+
+Звіт
+з лабораторної роботи № 2 з дисципліни
+Архітектура програмного забезпечення
+за темою «Програмна система для автоматизації процесів управління притулками для тварин» 
+
+
+
+
+
+Виконала:                                                                 Перевірив:
+ст. гр. ПЗПІ-23-5                        			ст. викладач кафедри ПІ
+Бураковська Марія					Сокорчук Ігор Петрович
+
+
+
+
+
+
+
+Харків 2026
+1 ІСТОРІЯ ЗМІН
+
+№ДатаВерсія звітуОпис змін та виправлень109.05.20250.1Створення структури звіту
+
+
+
+2 ЗАВДАННЯ
+
+     На цій лабораторній роботі потрібно розробити мобільний програмний застосунок для будь-якої поширеної на сьогодні мобільної платформи. Мобільний застосунок повинен бути частиною системи і повинен взаємодіяти з нею. Для реалізації програмного застосунку можна використовувати технології для реалізації програмного забезпечення для мобільних платформ, вказані лектором, а саме Kotlin для Android та Swift для iOS.
+
+     3 ОПИС ВИКОНАНОЇ РОБОТИ
+
+     Система являє собою єдиний цифровий простір для управління притулками для тварин. У ході виконання лабораторної роботи було спроєктовано архітектуру мобільного клієнта (Android), розробленого мовою Kotlin з використанням декларативного UI-фреймворку Jetpack Compose.
+     Опис прийнятих інженерних рішень:
+* архітектурний патерн (MVVM): Мобільний застосунок побудовано за патерном Model-View-ViewModel. Це дозволяє чітко розділити UI-шар (екрани Jetpack Compose) від бізнес-логіки (ViewModels) та шару даних (Repositories);
+* мережева взаємодія: Для зв'язку з бекендом (Node.js) використовується клієнт Ktor (HTTP/JSON). Взаємодія відбувається через REST API. Дані передаються у вигляді DTO (Data Transfer Objects), що забезпечує чіткий контракт між клієнтом та сервером;
+* локальне збереження даних: Для збереження сесійних даних користувача (токен, ідентифікатор, пошта) імплементовано Preferences DataStore. Це дозволяє зберігати стан авторизації навіть після перезапуску застосунку;
+* оптимістичне оновлення інтерфейсу (Optimistic UI): Для волонтерських завдань застосовано підхід оптимістичного оновлення. При зміні статусу завдання (натискання на чекбокс), стан UI оновлюється миттєво, а мережевий запит на сервер виконується у фоновому режимі. У разі помилки стан автоматично відкочується.
+     Мобільний застосунок виступає клієнтом, який агрегує дані. Шар UI генерує події (Actions), які обробляються у ViewModel. ViewModel викликає методи відповідних репозиторіїв (AuthRepository, TaskRepository, DonationRepository), які через Ktor формують HTTP-запити до Node.js сервера. Сервер взаємодіє з PostgreSQL базою даних через Knex.js та повертає результат, який оновлює State у мобільному додатку.
+     Для наочного представлення структури, поведінки та архітектури розробленого мобільного клієнта було побудовано ряд графічних моделей (візуалізація наведена у Додатку Б):
+* UML діаграма прецедентів (Use Case Diagram): Відображає взаємодію основних акторів (звичайного Користувача та Волонтера, який успадковує базові права) з функціоналом мобільного застосунку. Визначено ключові прецеденти: авторизація, перегляд каталогу тварин, здійснення донатів, подача заявок на усиновлення та управління статусами волонтерських завдань;
+* UML діаграма компонентів (Component Diagram): Ілюструє внутрішню будову Android-застосунку за патерном MVVM. На діаграмі показано розбиття на шари: UI (екрани Jetpack Compose), Presentation (ViewModels), Data (Repositories та DataStore) та Network (Ktor), а також продемонстровано напрямки потоків даних між ними та бекенд-сервером.
+* ER-модель даних (Entity–Relationship Model): Описує логічну структуру даних мобільної платформи. Визначено ключові сутності (Users, Volunteers, Animals, Tasks, Donations), їхні атрибути (DTO-моделі) та типи зв'язків між ними (один-до-багатьох, один-до-одного), необхідні для коректної обробки інформації на клієнті.
+* UML діаграма діяльності (Activity Diagram): Деталізує алгоритм виконання бізнес-процесу «Здійснення донату». Діаграма розбита на зони відповідальності, що дозволяє відстежити шлях від дій користувача (введення суми) через обробку логіки у ViewModel (валідація, показ індикаторів завантаження) до мережевого запиту на сервер та фінального оновлення UI (показ діалогового вікна подяки).
+     Для підготовки технічної документації, написання коду та аналізу архітектури мобільного застосунку притулку було використано сервіси штучного інтелекту. 
+     Назва інструменту та версія: Gemini 3.1 Pro. 
+     Мета використання: Написання та оптимізація коду на Kotlin (Jetpack Compose) і Node.js, структурування технічного звіту за вимогами дисципліни, генерація синтаксису для UML та ER-діаграм у форматі Mermaid, а також проєктування складних технічних рішень. 
+     Внесок автора: Автор самостійно розробив архітектурну концепцію, формував технічні завдання для генерації коду, проводив інтеграцію згенерованих фрагментів (UI-компоненти, репозиторії, маршрути бекенду) у єдину систему, тестував функціонал через Postman та верифікував код на відповідність патерну MVVM. Також автор перевірив логіку згенерованих діаграм та адаптував їх під фактичну структуру бази даних і мобільного застосунку, забезпечивши науково-технічний стиль викладу матеріалу.
+
+4 ВИСНОВКИ
+
+     У результаті виконання лабораторної роботи було успішно спроєктовано та задокументовано архітектуру мобільного застосунку для системи притулку тварин. Було обґрунтовано вибір інженерних рішень (MVVM, Ktor, DataStore) та змодельовано взаємодію між компонентами системи. Графічні моделі, наведені у додатках, повністю розкривають специфіку мобільного клієнта та його зв'язок із бекенд-інфраструктурою.
+
+ДОДАТОК А
+
+https://youtu.be/fCMM9_Fgsmc 
+0:18 - Вступ
+1:11 - Архітектурний патерн MVVM та UI-шар
+2:56 - Мережевий шар та Асинхронність
+4:41 - Локальне збереження та управління сесією
+5:38 - Оптимістичне оновлення UI
+7:11 - Впровадження консистентності
+7:48 - Початок демонстрації. Реєстрація нового користувача
+8:42 - Демонстрація головних бізнес-функцій застосунку
+10:11 - Демонстрація профілю волонтера
+11:12 - UML-діаграми
+13:26 - Висновки 
+
+ДОДАТОК Б
+
+Рисунок 1 – Use Case діаграма
+
+
+Рисунок 2 – UML діаграма компонентів
+
+Рисунок 3 – ER-діаграма
+
+
+Рисунок 4 – Діаграма активності (Частина 1)
+
+
+Рисунок 5 – Діаграма активності (Частина 2)
+
+
+ДОДАТОК В
+Приклади програмного коду
+
+Репозиторій тварин:
+1 package ua.nure.petshelter.repository.animal
+2 
+3 import io.ktor.client.HttpClient
+4 import io.ktor.client.call.body
+5 import io.ktor.client.request.get
+6 import io.ktor.http.HttpStatusCode
+7 import kotlinx.coroutines.Dispatchers
+8 import kotlinx.coroutines.withContext
+9 import kotlinx.serialization.SerializationException
+10 import ua.nure.petshelter.repository.DataError
+11 import ua.nure.petshelter.repository.Result
+12 import ua.nure.petshelter.repository.dto.AnimalDto
+13 import ua.nure.petshelter.repository.safeCall
+14 
+15 class AnimalRepositoryImpl(
+16     private val httpClient: HttpClient
+17 ) : AnimalRepository {
+18 
+19     override suspend fun getAnimals(): Result<List<AnimalDto>, DataError> = withContext(Dispatchers.IO) {
+20         safeCall<List<AnimalDto>> {
+21             httpClient.get("animals")
+22         }
+23     }
+24 
+25     override suspend fun getAnimalById(id: Int): Result<AnimalDto, DataError> {
+26         return try {
+27             val response = httpClient.get("/api/animals/$id")
+28 
+29             when (response.status) {
+30                 HttpStatusCode.OK -> {
+31                     val animal = response.body<AnimalDto>()
+32                     Result.Success(animal)
+33                 }
+34                 HttpStatusCode.NotFound -> {
+35                     Result.Error(DataError.ApiError("Тварину не знайдено"))
+36                 }
+37                 else -> {
+38                     Result.Error(DataError.Remote.SERVER)
+39                 }
+40             }
+41         } catch (e: SerializationException) {
+42             e.printStackTrace()
+43             Result.Error(DataError.Remote.SERIALIZATION)
+44         } catch (e: Exception) {
+45             e.printStackTrace()
+46             Result.Error(DataError.Remote.NO_INTERNET)
+47         }
+48     }
+49 }
+
+Оголошення станів та дій на екрані відображення списку тварин:
+1 package ua.nure.petshelter.ui.animals.list
+2 
+3 import ua.nure.petshelter.navigation.Screen
+4 import ua.nure.petshelter.repository.dto.AnimalDto
+5 
+6 object AnimalList {
+7     sealed interface Event {
+8         data class OnNavigate(val route: Screen) : Event
+9     }
+10 
+11     sealed interface Action {
+12         data class OnAnimalClick(val animalId: Int) : Action
+13         data object OnRefresh : Action
+14     }
+15 
+16     data class State(
+17         val animals: List<AnimalDto> = emptyList(),
+18         val isLoading: Boolean = false,
+19         val error: String? = null
+20     )
+21 }
+
+UI екрану відображення списку тварин:
+1 package ua.nure.petshelter.ui.animals.list
+2 
+3 import android.content.res.Configuration
+4 import androidx.compose.foundation.background
+5 import androidx.compose.foundation.layout.*
+6 import androidx.compose.foundation.lazy.LazyColumn
+7 import androidx.compose.foundation.lazy.items
+8 import androidx.compose.runtime.Composable
+9 import androidx.compose.runtime.LaunchedEffect
+10 import androidx.compose.runtime.getValue
+11 import androidx.compose.ui.Modifier
+12 import androidx.compose.ui.tooling.preview.Preview
+13 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+14 import androidx.navigation.NavController
+15 import ua.nure.petshelter.repository.dto.AnimalDto
+16 import ua.nure.petshelter.ui.compose.PSAnimalCard
+17 import ua.nure.petshelter.ui.compose.PScreen
+18 import ua.nure.petshelter.ui.compose.PSTitle
+19 import ua.nure.petshelter.ui.theme.AppTheme
+20 
+21 @Composable
+22 fun ListScreen(
+23     viewModel: ListViewModel,
+24     navController: NavController
+25 ) {
+26     val state by viewModel.state.collectAsStateWithLifecycle()
+27 
+28     LaunchedEffect(key1 = Unit) {
+29         viewModel.event.collect { event ->
+30             when (event) {
+31                 is AnimalList.Event.OnNavigate -> navController.navigate(event.route)
+32             }
+33         }
+34     }
+35 
+36     ListScreenContent(
+37         state = state,
+38         onAction = viewModel::onAction
+39     )
+40 }
+41 
+42 @Composable
+43 private fun ListScreenContent(
+44     state: AnimalList.State,
+45     onAction: (AnimalList.Action) -> Unit
+46 ) {
+47     PScreen {
+48         PSTitle(title = "Our Pets")
+49 
+50         LazyColumn(
+51             modifier = Modifier.fillMaxSize(),
+52             contentPadding = PaddingValues(
+53                 horizontal = AppTheme.dimension.normal,
+54                 vertical = AppTheme.dimension.small
+55             )
+56         ) {
+57             items(state.animals) { animal ->
+58                 PSAnimalCard(
+59                     animal = animal,
+60                     onClick = { onAction(AnimalList.Action.OnAnimalClick(animal.id)) }
+61                 )
+62             }
+63         }
+64     }
+65 }
+66 
+67 @Preview(showSystemUi = true)
+68 @Composable
+69 private fun ListScreenPreview() {
+70     AppTheme {
+71         Box(modifier = Modifier.background(AppTheme.color.background)) {
+72             ListScreenContent(
+73                 state = AnimalList.State(
+74                     animals = listOf(
+75                         AnimalDto(
+76                             id = 1,
+77                             name = "Buddy",
+78                             species = "Dog",
+79                             breed = "Golden Retriever",
+80                             gender = "MALE",
+81                             birthDate = "2022-05-10",
+82                             description = "Very friendly dog",
+83                             status = "Available"
+84                         ),
+85                         AnimalDto(
+86                             id = 2,
+87                             name = "Luna",
+88                             species = "Cat",
+89                             breed = "Siamese",
+90                             gender = "FEMALE",
+91                             birthDate = "2023-01-15",
+92                             description = "Loves to play",
+93                             status = "Available"
+94                         ),
+95                         AnimalDto(
+96                             id = 3,
+97                             name = "Max",
+98                             species = "Dog",
+99                             breed = "Beagle",
+100                             gender = "MALE",
+101                             birthDate = "2021-11-20",
+102                             description = "Energetic and loyal",
+103                             status = "Adopted"
+104                         )
+105                     )
+106                 ),
+107                 onAction = {}
+108             )
+109         }
+110     }
+111 }
+112 
+113 @Preview(showSystemUi = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
+114 @Composable
+115 private fun ListScreenDarkPreview() {
+116     ListScreenPreview()
+117 }
+
+Імплементування бізнес-логіки екрану відображення списку тварин:
+1 package ua.nure.petshelter.ui.animals.list
+2 
+3 import androidx.lifecycle.ViewModel
+4 import androidx.lifecycle.viewModelScope
+5 import dagger.hilt.android.lifecycle.HiltViewModel
+6 import kotlinx.coroutines.flow.MutableSharedFlow
+7 import kotlinx.coroutines.flow.MutableStateFlow
+8 import kotlinx.coroutines.flow.asSharedFlow
+9 import kotlinx.coroutines.flow.asStateFlow
+10 import kotlinx.coroutines.flow.update
+11 import kotlinx.coroutines.launch
+12 import ua.nure.petshelter.navigation.Screen
+13 import ua.nure.petshelter.repository.animal.AnimalRepository
+14 import ua.nure.petshelter.repository.onError
+15 import ua.nure.petshelter.repository.onSuccess
+16 import javax.inject.Inject
+17 
+18 @HiltViewModel
+19 class ListViewModel @Inject constructor(
+20     private val animalRepository: AnimalRepository
+21 ) : ViewModel() {
+22 
+23     private val _state = MutableStateFlow(AnimalList.State())
+24     val state = _state.asStateFlow()
+25 
+26     private val _event = MutableSharedFlow<AnimalList.Event>()
+27     val event = _event.asSharedFlow()
+28 
+29     init {
+30         loadAnimals()
+31     }
+32 
+33     fun onAction(action: AnimalList.Action) = viewModelScope.launch {
+34         when (action) {
+35             is AnimalList.Action.OnAnimalClick -> {
+36                  _event.emit(AnimalList.Event.OnNavigate(route = Screen.Animals.Details(action.animalId)))
+37             }
+38             AnimalList.Action.OnRefresh -> loadAnimals()
+39         }
+40     }
+41 
+42     private fun loadAnimals() {
+43         viewModelScope.launch {
+44             _state.update { it.copy(isLoading = true) }
+45             animalRepository.getAnimals()
+46                 .onSuccess { list ->
+47                     _state.update { it.copy(animals = list, isLoading = false) }
+48                 }
+49                 .onError {
+50                     _state.update { it.copy(isLoading = false, error = "Failed to load") }
+51                 }
+52         }
+53     }
+54 }
+2
+
 
