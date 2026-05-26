@@ -1,0 +1,207 @@
+﻿  МІНІСТЕРСТВО ОСВІТИ І НАУКИ УКРАЇНИ
+ХАРКІВСЬКИЙ НАЦІОНАЛЬНИЙ УНІВЕРСИТЕТ РАДІОЕЛЕКТРОНІКИ
+КАФЕДРА ПРОГРАМНОЇ ІНЖЕНЕРІЇ
+
+
+
+
+
+
+Звіт
+з лабораторної роботи № 3 з дисципліни
+Архітектура програмного забезпечення
+за темою «Програмна система для автоматизації процесів управління притулками для тварин» 
+
+
+
+
+
+Виконала:                                                                 Перевірив:
+ст. гр. ПЗПІ-23-5                        			ст. викладач кафедри ПІ
+Бураковська Марія					Сокорчук Ігор Петрович
+
+
+
+
+
+
+
+Харків 2026
+1 ІСТОРІЯ ЗМІН
+
+№ДатаВерсія звітуОпис змін та виправлень126.05.20250.1Створення структури звіту
+
+
+
+2 ЗАВДАННЯ
+
+     На цій лабораторній роботі потрібно розробити front-end частину програмної системи. Ця частина системи повинна підтримувати роботу клієнтів у веб-режимі та забезпечувати адміністрування системи, тобто мати окремий інтерфейс для звичайних користувачів і окремий — для адміністраторів (відповідно до ролей користувачів вашої системи). Користувацький інтерфейс та інтерфейс адміністрування повинні підтримувати інтернаціоналізацію та локалізацію, а саме, забезпечувати: підтримку української на англійської мов сайту, формат дати та часу відповідний регіону, порядок сортування текстових значень, різні напрями введення тексту тощо. Адміністрування системи повинно забезпечувати: управління користувачами системи, управління даними системи, створення резервних копій налаштувань та даних, експорт та імпорт даних та налаштувань.
+
+     3 ОПИС ВИКОНАНОЇ РОБОТИ
+
+     Система являє собою єдиний цифровий простір для управління притулками для тварин. У ході виконання лабораторної роботи було спроєктовано архітектуру веб-клієнта, розробленого мовою JavaScript з використанням бібліотеки React.js.
+     Опис прийнятих інженерних рішень:
+* архітектурний підхід (SPA & Component-based): Застосунок побудовано як Single Page Application. Інтерфейс розділено на незалежні компоненти, що забезпечує перевикористання коду та швидкий рендеринг без перезавантаження сторінки;
+* маршрутизація та безпека (Protected Routes): Для навігації використано react-router-dom. Написано компонент ProtectedRoute, який перевіряє JWT-токен та роль користувача (AuthContext) перед наданням доступу до адміністративних панелей;
+* мережева взаємодія: Для зв'язку з бекендом (Node.js/Express) використовується бібліотека axios. Дані передаються у форматі JSON через REST API;
+* інтернаціоналізація та локалізація (i18n/l10n): Застосовано бібліотеку i18next. Реалізовано динамічну зміну мови (українська/англійська), форматування дат відповідно до локалі (Intl.DateTimeFormat), локалізоване сортування масивів (localeCompare) та динамічну зміну напрямку тексту (LTR/RTL) на рівні DOM-дерева;
+* робота з бінарними даними (Export/Import): Для функції Адміністратора системи реалізовано алгоритм завантаження резервної копії БД у форматі JSON та безпечний імпорт через транзакції knex на бекенді з відновленням консистентності зовнішніх ключів (Foreign Keys) та автоінкрементів (Sequences).
+     Для наочного представлення структури, поведінки та архітектури розробленого веб-клієнта було побудовано ряд графічних моделей (візуалізація наведена у Додатку Б):
+* UML діаграма прецедентів (Use Case Diagram): Відображає взаємодію основних акторів (Гість, Користувач, Волонтер, Адміністратор, Адміністратор системи) з функціоналом веб-застосунку.
+* UML діаграма компонентів (Component Diagram): Ілюструє внутрішню будову застосунку. Показує розбиття на UI-шар, Context-шар, Router, а також взаємодію клієнта з бекенд-сервером та базою даних PostgreSQL.
+* UML діаграма взаємодії (Interaction Overview Diagram): Фокусується на потоці керування під час процесу авторизації, створення заявки на усиновлення та її обробки адміністратором.
+* UML діаграма діяльності (Activity Diagram): Деталізує алгоритм виконання бізнес-процесу "Створення та виконання волонтерського завдання", від моменту призначення до перерахунку індексу активності волонтера.
+     Для підготовки технічної документації, написання коду та аналізу архітектури веб-застосунку притулку було використано сервіси штучного інтелекту. 
+     Назва інструменту та версія: Gemini (Google). 
+     Мета використання: Написання та оптимізація коду на React.js і Node.js, налаштування глобальної системи інтернаціоналізації, розробка складних SQL-транзакцій для імпорту/експорту реляційної бази даних, а також генерація синтаксису для UML-діаграм. 
+     Внесок автора: Автор самостійно розробив архітектурну концепцію, формував технічні завдання для генерації коду, проводив інтеграцію згенерованих фрагментів (UI-компоненти, Protected Routes, API ендпоінти) у єдину систему. Також автор налаштував взаємодію з БД, провів рефакторинг згенерованого коду для уникнення помилок, тестував інтернаціоналізацію (формати дат, сортування) та перевірив логіку згенерованих UML-діаграм, забезпечивши науково-технічний стиль викладу матеріалу.
+
+4 ВИСНОВКИ
+
+     У результаті виконання лабораторної роботи було успішно спроєктовано та реалізовано клієнтську частину веб-застосунку для системи притулку тварин. Було обґрунтовано вибір інженерних рішень (React, Axios, i18next) та змодельовано складну взаємодію між компонентами системи. Забезпечено повну відповідність вимогам інтернаціоналізації та жорстке розмежування прав доступу між ролями. Графічні моделі, наведені у додатках, розкривають специфіку клієнта та його зв'язок із бекенд-інфраструктурою.
+
+ДОДАТОК А
+
+https://youtu.be/pfszhgNsMlc 
+00:19 - Архітектура системи 
+01:07 - Початок демонстрації 
+1:56 - Демонстрація функціоналу волонтера 
+2:50 - Демонстрація функціоналу користувача 
+4:13 - Демонстрація функціоналу адміністратора притулку 
+6:28 - Демонстрація функціоналу адміністратора системи 
+8:35 - Розгляд UML-моделей 
+
+ДОДАТОК Б
+
+Рисунок 1 – UML-діаграма прецендентів
+
+
+
+Рисунок 2 – UML-діаграма компонентів
+
+Рисунок 3 – UML-діаграма вазємодії
+
+ 
+Рисунок 4 – Діаграма активності (Частина 1)
+
+ 
+Рисунок 5 – Діаграма активності (Частина 2)
+
+
+ДОДАТОК В
+Приклади програмного коду
+     Глобальне налаштування інтернаціоналізації та маршрутизації (App.jsx):
+1 import { useEffect } from 'react';
+2 import { BrowserRouter, Routes, Route } from 'react-router-dom';
+3 import { useTranslation } from 'react-i18next';
+4 import ProtectedRoute from './components/ProtectedRoute';
+5 import Navbar from './components/Navbar';
+6 import Login from './pages/Login';
+7 import Animals from './pages/Animals';
+8 import Register from './pages/Register';
+9 import Profile from './pages/Profile';
+10 import VolunteerTasks from './pages/VolunteerTasks';
+11 import AdminPanel from './pages/AdminPanel';
+12 import SuperAdminPanel from './pages/SuperAdminPanel';
+13 
+14 function App() {
+15     const { i18n } = useTranslation();
+16     
+17     useEffect(() => {
+18         document.dir = i18n.dir();
+19         document.documentElement.lang = i18n.language;
+20     }, [i18n.language]);
+21 
+22     return (
+23         <BrowserRouter>
+24             <Navbar />
+25 
+26             <Routes>
+27                 <Route path="/" element={<Animals />} />
+28 
+29                 <Route path="/login" element={<Login />} />
+30 
+31                 <Route path="/register" element={<Register />} />
+32 
+33                 <Route element={<ProtectedRoute allowedRoles={['USER', 'VOLUNTEER', 'ADMIN', 'SUPERADMIN']} />}>
+34                     <Route path="/profile" element={<Profile />} />
+35                 </Route>
+36 
+37                 <Route element={<ProtectedRoute allowedRoles={['VOLUNTEER']} />}>
+38                     <Route path="/tasks" element={<VolunteerTasks />} />
+39                 </Route>
+40 
+41                 <Route element={<ProtectedRoute allowedRoles={['ADMIN']} />}>
+42                     <Route path="/admin" element={<AdminPanel />} />
+43                 </Route>
+44 
+45                 <Route element={<ProtectedRoute allowedRoles={['SUPERADMIN']} />}>
+46                     <Route path="/superadmin/users" element={<SuperAdminPanel />} />
+47                 </Route>
+48             </Routes>
+49         </BrowserRouter>
+50     );
+51 }
+52 
+53 export default App;
+
+     Транзакційний імпорт резервної копії БД на бекенді (app.js):
+     1 router.post('/superadmin/import', upload.single('backup'), async (req, res) => {
+     2   if (!req.file) {
+     3     return res.status(400).json({ message: 'Файл не знайдено' });
+     4   }
+     5 
+     6   try {
+     7     const fileContent = fs.readFileSync(req.file.path, 'utf-8');
+     8     const backup = JSON.parse(fileContent);
+     9     const { data } = backup;
+     10 
+     11     await knex.transaction(async (trx) => {
+     12       await trx('tasks').del();
+     13       await trx('adoption_requests').del();
+     14       await trx('medical_records').del();
+     15       await trx('sensor_readings').del();
+     16       await trx('donations').del();
+     17       await trx('volunteers').del();
+     18       await trx('animals').del();
+     19       await trx('users').del();
+     20 
+     21       if (data.users?.length) await trx('users').insert(data.users);
+     22       if (data.animals?.length) await trx('animals').insert(data.animals);
+     23       if (data.volunteers?.length) await trx('volunteers').insert(data.volunteers);
+     24       if (data.donations?.length) await trx('donations').insert(data.donations);
+     25       if (data.medical_records?.length) await trx('medical_records').insert(data.medical_records);
+     26       if (data.sensor_readings?.length) await trx('sensor_readings').insert(data.sensor_readings);
+     27       if (data.adoption_requests?.length) await trx('adoption_requests').insert(data.adoption_requests);
+     28       if (data.tasks?.length) await trx('tasks').insert(data.tasks);
+     29 
+     30       const tables = [
+     31         'users', 'animals', 'volunteers', 'donations',
+     32         'medical_records', 'sensor_readings', 'adoption_requests', 'tasks'
+     33       ];
+     34 
+     35       for (const table of tables) {
+     36         await trx.raw(`
+     37           SELECT setval(
+     38             pg_get_serial_sequence('${table}', 'id'),
+     39             COALESCE((SELECT MAX(id) FROM ${table}), 1),
+     40             true
+     41           )
+     42         `);
+     43       }
+     44     });
+     45 
+     46     fs.unlinkSync(req.file.path);
+     47     res.status(200).json({ message: 'Базу даних успішно відновлено' });
+     48   } catch (error) {
+     49     console.error("FATAL Import error:", error);
+     50 
+     51     if (fs.existsSync(req.file.path)) {
+     52       fs.unlinkSync(req.file.path);
+     53     }
+     54     res.status(500).json({ message: 'Помилка при відновленні даних. Перевірте цілісність файлу.' });
+     55   }
+     56 });
+2
+
+
